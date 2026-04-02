@@ -207,18 +207,8 @@ Or in VS Code → open `ParkingSystemApplication.java` → click ▶ Run
 
 ---
 
-## 👨‍💻 Author
-
-**Your Name**  
-📧 your.email@example.com  
-🔗 [GitHub](https://github.com/YOUR_USERNAME)
-
----
 
 ## 📄 License
 
 This project is licensed under the MIT License.
 
----
-
-⭐ **If you found this helpful, please give it a star!**
