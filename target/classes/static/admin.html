@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ParkEase – Admin Panel</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet"/>
+  <style>
+    :root {
+      --primary: #00d4aa;
+      --primary-dark: #00a882;
+      --accent: #6366f1;
+      --danger: #f43f5e;
+      --bg: #0a0e1a;
+      --bg2: #111827;
+      --bg3: #1a2236;
+      --card: #151d2e;
+      --border: rgba(255,255,255,0.07);
+      --text: #e2e8f0;
+      --muted: #64748b;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+    }
+
+    .navbar-custom {
+      background: rgba(10,14,26,0.97);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 0;
+      position: sticky; top: 0; z-index: 999;
+    }
+
+    .brand {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.4rem;
+      color: var(--primary) !important;
+      text-decoration: none;
+    }
+    .brand span { color: var(--text); }
+
+    .admin-badge {
+      background: rgba(99,102,241,0.15);
+      border: 1px solid rgba(99,102,241,0.3);
+      color: #818cf8;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 50px;
+      letter-spacing: 0.5px;
+    }
+
+    .nav-back {
+      color: var(--muted) !important;
+      font-size: 0.85rem;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-back:hover { color: var(--primary) !important; }
+
+    /* ── PAGE HEADER ── */
+    .page-header {
+      padding: 40px 0 28px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 36px;
+    }
+    .page-header h1 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.8rem;
+      letter-spacing: -0.5px;
+    }
+
+    /* ── STAT CARDS ── */
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-card::after {
+      content: '';
+      position: absolute;
+      top: 0; right: 0;
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: var(--glow);
+      filter: blur(30px);
+      opacity: 0.5;
+    }
+    .stat-card .stat-icon {
+      font-size: 1.4rem;
+      margin-bottom: 12px;
+    }
+    .stat-card .stat-value {
+      font-family: 'Syne', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .stat-card .stat-label {
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* ── PANEL CARDS ── */
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      margin-bottom: 28px;
+    }
+    .panel-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .panel-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .panel-body { padding: 24px; }
+
+    /* ── FORM ── */
+    .form-row { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 12px; align-items: end; }
+
+    .form-group label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+    .form-control-dark {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.93rem;
+      width: 100%;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-control-dark:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(0,212,170,0.1);
+    }
+
+    .btn-add {
+      background: var(--primary);
+      color: var(--bg);
+      border: none;
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      padding: 10px 20px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .btn-add:hover { background: var(--primary-dark); }
+
+    /* ── BULK GENERATE ── */
+    .bulk-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+    .bulk-label { font-size: 0.8rem; color: var(--muted); }
+    .zone-pill {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 6px 14px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .zone-pill:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    /* ── SLOTS TABLE ── */
+    .slots-table { width: 100%; border-collapse: separate; border-spacing: 0 6px; }
+    .slots-table thead th {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 0 14px 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .slots-table tbody tr {
+      background: var(--bg3);
+      transition: background 0.2s;
+    }
+    .slots-table tbody td {
+      padding: 12px 14px;
+      font-size: 0.88rem;
+    }
+    .slots-table tbody td:first-child {
+      border-radius: 8px 0 0 8px;
+      border: 1px solid var(--border);
+      border-right: none;
+    }
+    .slots-table tbody td:last-child {
+      border-radius: 0 8px 8px 0;
+      border: 1px solid var(--border);
+      border-left: none;
+    }
+    .slots-table tbody td:not(:first-child):not(:last-child) {
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 50px;
+    }
+    .status-pill.available {
+      background: rgba(0,212,170,0.1);
+      color: var(--primary);
+      border: 1px solid rgba(0,212,170,0.2);
+    }
+    .status-pill.occupied {
+      background: rgba(244,63,94,0.1);
+      color: var(--danger);
+      border: 1px solid rgba(244,63,94,0.2);
+    }
+
+    .action-btn {
+      border: none;
+      border-radius: 7px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      padding: 5px 10px;
+      cursor: pointer;
+      transition: all 0.18s;
+      margin-right: 4px;
+    }
+    .btn-toggle-avail {
+      background: rgba(0,212,170,0.1);
+      color: var(--primary);
+      border: 1px solid rgba(0,212,170,0.2);
+    }
+    .btn-toggle-avail:hover { background: var(--primary); color: var(--bg); }
+    .btn-toggle-occ {
+      background: rgba(244,63,94,0.1);
+      color: var(--danger);
+      border: 1px solid rgba(244,63,94,0.2);
+    }
+    .btn-toggle-occ:hover { background: var(--danger); color: white; }
+    .btn-del {
+      background: rgba(148,163,184,0.08);
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+    .btn-del:hover { background: var(--danger); color: white; border-color: var(--danger); }
+
+    /* ── SEARCH SLOTS ── */
+    .admin-search {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 8px 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem;
+      outline: none;
+      width: 220px;
+    }
+    .admin-search:focus { border-color: var(--primary); }
+
+    /* ── TOAST ── */
+    .toast-custom {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+      padding: 14px 18px;
+      font-size: 0.88rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 280px;
+    }
+
+    @media (max-width: 768px) {
+      .form-row { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 480px) {
+      .form-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar-custom">
+    <div class="container d-flex align-items-center justify-content-between">
+      <div class="d-flex align-items-center gap-3">
+        <a href="index.html" class="brand">Park<span>Ease</span></a>
+        <span class="admin-badge"><i class="bi bi-shield-fill-check me-1"></i>Admin</span>
+      </div>
+      <a href="index.html" class="nav-back"><i class="bi bi-arrow-left me-1"></i>Back to User View</a>
+    </div>
+  </nav>
+
+  <div class="container">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+      <h1><i class="bi bi-gear-fill me-2" style="color:var(--accent)"></i>Admin Control Panel</h1>
+      <p style="color:var(--muted);margin-top:6px;font-size:0.9rem">Manage parking slots and monitor system activity</p>
+    </div>
+
+    <!-- STAT CARDS -->
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-md-3">
+        <div class="stat-card" style="--glow:rgba(0,212,170,0.6)">
+          <div class="stat-icon">🅿️</div>
+          <div class="stat-value" id="s-total">–</div>
+          <div class="stat-label">Total Slots</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-card" style="--glow:rgba(0,212,170,0.6)">
+          <div class="stat-icon">🟢</div>
+          <div class="stat-value" style="color:var(--primary)" id="s-avail">–</div>
+          <div class="stat-label">Available</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-card" style="--glow:rgba(244,63,94,0.6)">
+          <div class="stat-icon">🔴</div>
+          <div class="stat-value" style="color:var(--danger)" id="s-occ">–</div>
+          <div class="stat-label">Occupied</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-card" style="--glow:rgba(99,102,241,0.6)">
+          <div class="stat-icon">📊</div>
+          <div class="stat-value" style="color:#818cf8" id="s-rate">–%</div>
+          <div class="stat-label">Occupancy Rate</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADD SLOT PANEL -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title"><i class="bi bi-plus-circle-fill" style="color:var(--primary)"></i> Add Parking Slot</div>
+      </div>
+      <div class="panel-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Slot Number</label>
+            <input type="text" id="add-slot-num" class="form-control-dark" placeholder="e.g. A1, B3, C5"
+                   style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase()"/>
+          </div>
+          <div class="form-group">
+            <label>Zone / Area</label>
+            <input type="text" id="add-area" class="form-control-dark" placeholder="e.g. A, B, C"
+                   oninput="this.value=this.value.toUpperCase()"/>
+          </div>
+          <div class="form-group">
+            <label>Initial Status</label>
+            <select id="add-status" class="form-control-dark">
+              <option value="AVAILABLE">🟢 Available</option>
+              <option value="OCCUPIED">🔴 Occupied</option>
+            </select>
+          </div>
+          <button class="btn-add" onclick="addSlot()"><i class="bi bi-plus-lg me-1"></i>Add Slot</button>
+        </div>
+
+        <!-- BULK ADD -->
+        <div class="bulk-row">
+          <span class="bulk-label">Quick add 5 slots for zone:</span>
+          <button class="zone-pill" onclick="bulkAdd('A')">Zone A (A1–A5)</button>
+          <button class="zone-pill" onclick="bulkAdd('B')">Zone B (B1–B5)</button>
+          <button class="zone-pill" onclick="bulkAdd('C')">Zone C (C1–C5)</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLOTS MANAGEMENT PANEL -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title"><i class="bi bi-table" style="color:var(--accent)"></i> All Parking Slots</div>
+        <input type="text" class="admin-search" placeholder="Search slots…" oninput="filterAdminSlots(this.value)"/>
+      </div>
+      <div class="panel-body" style="padding:16px 24px">
+        <div class="table-responsive">
+          <table class="slots-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Slot</th>
+                <th>Zone</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="admin-slots-tbody">
+              <tr><td colspan="5" class="text-center py-4" style="color:var(--muted)">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOOKINGS PANEL -->
+    <div class="panel mb-5">
+      <div class="panel-header">
+        <div class="panel-title"><i class="bi bi-journal-check" style="color:#f59e0b"></i> All Bookings History</div>
+        <span id="booking-count" style="font-size:0.8rem;color:var(--muted)"></span>
+      </div>
+      <div class="panel-body" style="padding:16px 24px">
+        <div class="table-responsive">
+          <table class="slots-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Slot</th>
+                <th>User</th>
+                <th>Vehicle</th>
+                <th>Start</th>
+                <th>End</th>
+                <th>Duration</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="all-bookings-tbody">
+              <tr><td colspan="8" class="text-center py-4" style="color:var(--muted)">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="adminToast" class="toast align-items-center border-0" role="alert">
+      <div class="d-flex">
+        <div class="toast-body toast-custom" id="a-toast-body">
+          <span id="a-toast-icon">✅</span>
+          <span id="a-toast-msg">Done!</span>
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const API = 'http://localhost:8080';
+    let adminSlots = [];
+
+    async function adminInit() {
+      await Promise.all([loadAdminSlots(), loadAllBookings()]);
+    }
+
+    // ── LOAD SLOTS ──
+    async function loadAdminSlots() {
+      try {
+        const res = await fetch(`${API}/slots`);
+        adminSlots = await res.json();
+        updateAdminStats();
+        renderAdminSlots(adminSlots);
+      } catch(e) {
+        showToast('❌', 'Cannot connect to server');
+      }
+    }
+
+    function updateAdminStats() {
+      const total = adminSlots.length;
+      const avail = adminSlots.filter(s => s.status === 'AVAILABLE').length;
+      const occ = total - avail;
+      document.getElementById('s-total').textContent = total;
+      document.getElementById('s-avail').textContent = avail;
+      document.getElementById('s-occ').textContent = occ;
+      document.getElementById('s-rate').textContent = total ? Math.round((occ/total)*100) + '%' : '0%';
+    }
+
+    function renderAdminSlots(slots) {
+      const tbody = document.getElementById('admin-slots-tbody');
+      if (!slots.length) {
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center py-5" style="color:var(--muted)">
+          <i class="bi bi-inbox" style="font-size:2rem;display:block;margin-bottom:8px"></i>No slots added yet. Add your first slot above!</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = slots.map(s => `
+        <tr>
+          <td style="color:var(--muted);font-size:0.75rem">#${s.id}</td>
+          <td><strong style="font-family:'Syne',sans-serif;font-size:1rem">${s.slotNumber}</strong></td>
+          <td><span style="color:var(--muted)">${s.area || '–'}</span></td>
+          <td>
+            <span class="status-pill ${s.status === 'AVAILABLE' ? 'available' : 'occupied'}">
+              <span style="width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block"></span>
+              ${s.status}
+            </span>
+          </td>
+          <td>
+            ${s.status === 'OCCUPIED'
+              ? `<button class="action-btn btn-toggle-avail" onclick="toggleStatus(${s.id},'AVAILABLE')"><i class="bi bi-check2 me-1"></i>Mark Available</button>`
+              : `<button class="action-btn btn-toggle-occ" onclick="toggleStatus(${s.id},'OCCUPIED')"><i class="bi bi-x me-1"></i>Mark Occupied</button>`
+            }
+            <button class="action-btn btn-del" onclick="deleteSlot(${s.id}, '${s.slotNumber}')"><i class="bi bi-trash3"></i></button>
+          </td>
+        </tr>`).join('');
+    }
+
+    function filterAdminSlots(q) {
+      const filtered = adminSlots.filter(s =>
+        s.slotNumber.toLowerCase().includes(q.toLowerCase()) ||
+        (s.area && s.area.toLowerCase().includes(q.toLowerCase()))
+      );
+      renderAdminSlots(filtered);
+    }
+
+    // ── ADD SLOT ──
+    async function addSlot() {
+      const slotNumber = document.getElementById('add-slot-num').value.trim();
+      const area = document.getElementById('add-area').value.trim();
+      const status = document.getElementById('add-status').value;
+      if (!slotNumber) { showToast('⚠', 'Enter a slot number'); return; }
+
+      try {
+        const res = await fetch(`${API}/slots`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ slotNumber, area, status })
+        });
+        const data = await res.json();
+        if (!res.ok) { showToast('❌', data.error || 'Failed'); return; }
+        showToast('✅', `Slot ${slotNumber} added!`);
+        document.getElementById('add-slot-num').value = '';
+        document.getElementById('add-area').value = '';
+        await loadAdminSlots();
+      } catch(e) {
+        showToast('❌', 'Server error');
+      }
+    }
+
+    // ── BULK ADD ──
+    async function bulkAdd(zone) {
+      let added = 0;
+      for (let i = 1; i <= 5; i++) {
+        const slotNumber = `${zone}${i}`;
+        try {
+          const res = await fetch(`${API}/slots`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ slotNumber, area: zone, status: 'AVAILABLE' })
+          });
+          if (res.ok) added++;
+        } catch(e) {}
+      }
+      showToast('✅', `Zone ${zone}: Added ${added} slots!`);
+      await loadAdminSlots();
+    }
+
+    // ── TOGGLE STATUS ──
+    async function toggleStatus(id, newStatus) {
+      try {
+        const res = await fetch(`${API}/slots/${id}/status`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: newStatus })
+        });
+        if (!res.ok) { showToast('❌', 'Update failed'); return; }
+        showToast('✅', `Status updated to ${newStatus}`);
+        await loadAdminSlots();
+      } catch(e) { showToast('❌', 'Server error'); }
+    }
+
+    // ── DELETE SLOT ──
+    async function deleteSlot(id, slotNum) {
+      if (!confirm(`Delete slot ${slotNum}? This cannot be undone.`)) return;
+      try {
+        await fetch(`${API}/slots/${id}`, { method: 'DELETE' });
+        showToast('🗑', `Slot ${slotNum} deleted`);
+        await loadAdminSlots();
+      } catch(e) { showToast('❌', 'Delete failed'); }
+    }
+
+    // ── LOAD ALL BOOKINGS ──
+    async function loadAllBookings() {
+      try {
+        const res = await fetch(`${API}/bookings`);
+        const bookings = await res.json();
+        document.getElementById('booking-count').textContent = `${bookings.length} total records`;
+        renderAllBookings(bookings);
+      } catch(e) {}
+    }
+
+    function renderAllBookings(bookings) {
+      const tbody = document.getElementById('all-bookings-tbody');
+      if (!bookings.length) {
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center py-4" style="color:var(--muted)">No bookings yet</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = bookings.map(b => {
+        const start = new Date(b.startTime);
+        const end = b.endTime ? new Date(b.endTime) : null;
+        let dur = '–';
+        if (end) {
+          const mins = Math.floor((end - start) / 60000);
+          dur = mins < 60 ? `${mins}m` : `${Math.floor(mins/60)}h ${mins%60}m`;
+        } else {
+          const mins = Math.floor((Date.now() - start) / 60000);
+          dur = `<span style="color:var(--primary)">${mins < 60 ? mins+'m' : Math.floor(mins/60)+'h '+mins%60+'m'} ●</span>`;
+        }
+        return `<tr>
+          <td style="color:var(--muted);font-size:0.75rem">#${b.id}</td>
+          <td><strong style="font-family:'Syne',sans-serif">${b.slot.slotNumber}</strong></td>
+          <td>${b.userName}</td>
+          <td style="font-family:monospace;font-size:0.82rem">${b.vehicleNumber}</td>
+          <td style="color:var(--muted);font-size:0.8rem">${start.toLocaleString()}</td>
+          <td style="color:var(--muted);font-size:0.8rem">${end ? end.toLocaleString() : '–'}</td>
+          <td>${dur}</td>
+          <td><span class="status-pill ${b.status === 'ACTIVE' ? 'available' : 'occupied'}">${b.status}</span></td>
+        </tr>`;
+      }).join('');
+    }
+
+    // ── TOAST ──
+    function showToast(icon, msg) {
+      document.getElementById('a-toast-icon').textContent = icon;
+      document.getElementById('a-toast-msg').textContent = msg;
+      new bootstrap.Toast(document.getElementById('adminToast'), { delay: 3000 }).show();
+    }
+
+    adminInit();
+    setInterval(adminInit, 30000);
+  </script>
+</body>
+</html>
